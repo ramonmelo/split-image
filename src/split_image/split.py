@@ -6,6 +6,19 @@ from collections import Counter
 
 from PIL import Image
 
+def split_width(im, width, image_path):
+    name, ext = os.path.splitext(image_path)
+    im_width, im_height = im.size
+
+    n = 0
+    while im_width > width:
+        box = (n * width, 0, (n * width) + width, im_height)
+        outp = im.crop(box)
+        outp_path = name + "_" + str(n) + ext
+        print("Exporting image tile: " + outp_path)
+        outp.save(outp_path)  
+        im_width -= width
+        n += 1
 
 def split(im, rows, cols, image_path, should_cleanup):
     im_width, im_height = im.size
@@ -90,6 +103,8 @@ def main():
                         help="How many rows to split the image into (horizontal split).")
     parser.add_argument("cols", type=int, default=2, nargs='?',
                         help="How many columns to split the image into (vertical split).")
+    parser.add_argument("-w", "--width", type=int, default=-1, nargs='?',
+                        help="Split image by width of the resulting image.")
     parser.add_argument("-s", "--square", action="store_true",
                         help="If the image should be resized into a square before splitting.")
     parser.add_argument("-r", "--reverse", action="store_true",
@@ -132,6 +147,8 @@ def main():
             split(im_r, args.rows, args.cols, image_path, args.cleanup)
             print("Exporting resized image...")
             im_r.save(image_path + "_squared.png")
+        elif args.width > 0:
+            split_width(im, args.width, image_path)
         else:
             split(im, args.rows, args.cols, image_path, args.cleanup)
     print("Done!")
