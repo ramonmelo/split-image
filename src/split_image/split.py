@@ -6,7 +6,10 @@ from collections import Counter
 
 from PIL import Image
 
-def split_width(im, width, image_path):
+
+def split_width(im: Image, width: int, image_path: str):
+    """Split an image based only on desired width of each slice"""
+
     name, ext = os.path.splitext(image_path)
     im_width, im_height = im.size
 
@@ -16,9 +19,10 @@ def split_width(im, width, image_path):
         outp = im.crop(box)
         outp_path = name + "_" + str(n) + ext
         print("Exporting image tile: " + outp_path)
-        outp.save(outp_path)  
+        outp.save(outp_path)
         im_width -= width
         n += 1
+
 
 def split(im, rows, cols, image_path, should_cleanup):
     im_width, im_height = im.size
